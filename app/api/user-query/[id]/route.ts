@@ -11,17 +11,7 @@ interface Author {
   bio: string;
 }
 
-interface Startup {
-  _id: string;
-  title: string;
-  description: string;
-  category: string;
-  author: Author;
-  image: string;
-  pitch: string;
-  views: number;
-  _createdAt: string;
-}
+// Startup interface removed as it's not used in this file
 
 export async function GET(
     request: Request,

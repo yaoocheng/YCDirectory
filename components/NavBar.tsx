@@ -41,7 +41,7 @@ export default async function NavBar() {
                             <button className='cursor-pointer' onClick={async () => {
                                 'use server'
 
-                                await signIn({ provider: 'github' })
+                                await signIn('github')
                             }}>
                                 <span>Login</span>
                             </button>

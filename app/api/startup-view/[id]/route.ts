@@ -3,9 +3,9 @@ import fs from "fs";
 import path from "path";
 import { Startup } from "@/types/types";
 
-export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
-        const { id } = params;
+        const { id } = await params;
         
         if (!id) {
             return NextResponse.json({ error: "Startup ID is required" }, { status: 400 });
@@ -50,9 +50,9 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     }
 }
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
-        const { id } = params;
+        const { id } = await params;
         
         if (!id) {
             return NextResponse.json({ error: "Startup ID is required" }, { status: 400 });

@@ -70,7 +70,7 @@ function StartupForm() {
         }
     };
 
-    const [state, formAction, isPending] = useActionState(handleFormSubmit, { success: false });
+    const [, formAction, isPending] = useActionState(handleFormSubmit, { success: false });
 
     return (
         <form action={formAction} className="startup-form">
