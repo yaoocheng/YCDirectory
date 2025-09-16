@@ -7,7 +7,7 @@ const View = async ({ postsData }: { postsData: Startup }) => {
 
     after(async () => {
         // 这是你更新数据库的代码
-        await fetch(`https://${process.env.VERCEL_URL || 'http://localhost:3000'}/api/startup-view/${postsData._id}`, {
+        await fetch(`${process.env.VERCEL_URL || 'http://localhost:3000'}/api/startup-view/${postsData._id}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
