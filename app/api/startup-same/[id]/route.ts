@@ -31,7 +31,7 @@ export async function GET(
         const { id } = await params;
 
         // 读取 startup.json 文件
-        const filePath = path.join(process.cwd(), 'mock', 'startup.json');
+        const filePath = path.join(process.cwd(), 'public', 'startup.json');
         const fileContents = fs.readFileSync(filePath, 'utf8');
         const allStartups: Startup[] = JSON.parse(fileContents);
         

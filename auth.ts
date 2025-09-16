@@ -27,7 +27,7 @@ async function saveUserToMockData(userInfo: {
     bio?: string;
 }) {
     try {
-        const userFilePath = path.join(process.cwd(), 'mock', 'user.json');
+        const userFilePath = path.join(process.cwd(), 'public', 'user.json');
         
         // 读取现有用户数据
         let users: Author[] = [];

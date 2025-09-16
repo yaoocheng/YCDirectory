@@ -30,7 +30,7 @@ export async function GET(
     try {
         const { id } = await params;
 
-        const filePath = path.join(process.cwd(), 'mock', 'startup.json');
+        const filePath = path.join(process.cwd(), 'public', 'startup.json');
         const fileContents = fs.readFileSync(filePath, 'utf8');
         const posts: Startup[] = JSON.parse(fileContents);
         

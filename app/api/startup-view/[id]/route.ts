@@ -12,7 +12,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         }
 
         // 读取startup.json文件
-        const startupFilePath = path.join(process.cwd(), 'mock', 'startup.json');
+        const startupFilePath = path.join(process.cwd(), 'public', 'startup.json');
         
         if (!fs.existsSync(startupFilePath)) {
             return NextResponse.json({ error: "Startup data file not found" }, { status: 404 });
@@ -59,7 +59,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         }
 
         // 读取startup.json文件
-        const startupFilePath = path.join(process.cwd(), 'mock', 'startup.json');
+        const startupFilePath = path.join(process.cwd(), 'public', 'startup.json');
         
         if (!fs.existsSync(startupFilePath)) {
             return NextResponse.json({ error: "Startup data file not found" }, { status: 404 });

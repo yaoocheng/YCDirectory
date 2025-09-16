@@ -81,7 +81,7 @@ export async function POST(request: Request) {
     }
 
     // 读取现有数据
-    const filePath = path.join(process.cwd(), 'mock', 'startup.json');
+    const filePath = path.join(process.cwd(), 'public', 'startup.json');
     const fileContents = fs.readFileSync(filePath, 'utf8');
     const existingStartups: Startup[] = JSON.parse(fileContents);
 

@@ -20,7 +20,7 @@ export async function GET(
     try {
         const { id } = await params;
 
-        const filePath = path.join(process.cwd(), 'mock', 'user.json');
+        const filePath = path.join(process.cwd(), 'public', 'user.json');
         const fileContents = fs.readFileSync(filePath, 'utf8');
         const users: Author[] = JSON.parse(fileContents);
         
