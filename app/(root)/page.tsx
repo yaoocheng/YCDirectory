@@ -10,7 +10,7 @@ export default async function Home({
 
     // 通过API请求获取数据，包含搜索查询参数
     const searchQuery = query ? `?query=${encodeURIComponent(query)}` : '';
-    const response = await fetch(`${process.env.VERCEL_URL || 'http://localhost:3000'}/api/startup-data${searchQuery}`, {
+    const response = await fetch(`https://${process.env.VERCEL_URL || 'http://localhost:3000'}/api/startup-data${searchQuery}`, {
         cache: 'no-store' // 确保每次都获取最新数据
     });
 
