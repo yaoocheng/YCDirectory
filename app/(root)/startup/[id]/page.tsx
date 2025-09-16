@@ -14,7 +14,7 @@ async function page({ params }: { params: { id: string } }) {
     const md = markdownit();
     const { id } = await params;
 
-    const response = await fetch(`${process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'}/api/startup-query/${id}`, {
+    const response = await fetch(`/api/startup-query/${id}`, {
         cache: 'no-store' // 确保每次都获取最新数据
     });
 
@@ -26,7 +26,7 @@ async function page({ params }: { params: { id: string } }) {
 
     const parsedContent = md.render(postsData.pitch || '');
 
-    const sameResponse = await fetch(`${process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'}/api/startup-same/${id}`, {
+    const sameResponse = await fetch(`/api/startup-same/${id}`, {
         cache: 'no-store' // 确保每次都获取最新数据
     });
 

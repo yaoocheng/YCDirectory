@@ -10,7 +10,7 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
   const id = (await params).id;
   const session = await auth();
 
-  const userRes = await fetch(`${process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'}/api/user-query/${id}`, {
+  const userRes = await fetch(`/api/user-query/${id}`, {
     method: "GET",
     cache: "no-cache",
   });
@@ -18,7 +18,7 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
   const user = await userRes.json();
   if (user.error) return notFound();
 
-  const res = await fetch(`${process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'}/api/startup-user/${id}`, {
+  const res = await fetch(`/api/startup-user/${id}`, {
     method: "GET",
     cache: "no-cache",
   });
