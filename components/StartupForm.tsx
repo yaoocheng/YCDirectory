@@ -29,7 +29,7 @@ function StartupForm() {
             // 验证表单数据
             await formSchema.parseAsync(formValues);
 
-            const response = await fetch(`/api/startup-add`, {
+            const response = await fetch(`https://yc-directory-yccccc.vercel.app/api/startup-add`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
