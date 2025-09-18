@@ -76,7 +76,7 @@ async function page({ params }: { params: { id: string } }) {
 
                     {samePostsData?.length > 0 && (
                         <div className="max-w-4xl mx-auto">
-                            <p className="text-30-semibold">Editor Picks</p>
+                            <p className="text-30-semibold">Similar Startups</p>
                             <ul className="mt-7 card_grid-sm">
                                 {samePostsData.map((post, i: number) => (
                                     <StartupCard key={i} post={post} />
