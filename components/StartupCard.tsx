@@ -19,6 +19,7 @@ const StartupCard = ({ post }: { post: StartupTypeCard }) => {
         image,
         description,
     } = post;
+    
 
     return (
         <li className="startup-card group">

@@ -1,9 +1,7 @@
 // auth.ts 放在项目根目录（或合适位置）
 import NextAuth from "next-auth"
 import GitHub from "next-auth/providers/github";
-import fs from "fs";
-import path from "path";
-import { Author } from "@/types/types";
+import { createOrUpdateAuthor } from "@/lib/db-operations";
 
 // 基于用户信息生成固定的唯一ID
 function generateUserBasedId(userEmail: string, userName: string): string {
@@ -17,8 +15,8 @@ function generateUserBasedId(userEmail: string, userName: string): string {
     return Math.abs(hash).toString();
 }
 
-// 保存用户信息到mock/user.json
-async function saveUserToMockData(userInfo: {
+// 保存用户信息到数据库
+async function saveUserToDatabase(userInfo: {
     id: string;
     name?: string | null;
     email?: string | null;
@@ -27,42 +25,14 @@ async function saveUserToMockData(userInfo: {
     bio?: string;
 }) {
     try {
-        const userFilePath = path.join(process.cwd(), 'public', 'user.json');
-        
-        // 读取现有用户数据
-        let users: Author[] = [];
-        if (fs.existsSync(userFilePath)) {
-            const fileContent = fs.readFileSync(userFilePath, 'utf-8');
-            users = JSON.parse(fileContent);
-        }
-        
-        // 检查用户是否已存在
-        const existingUserIndex = users.findIndex(user => user._id === userInfo.id);
-        
-        // 创建用户对象
-        const newUser: Author = {
-            _id: userInfo.id,
-            _type: "author",
-            _createdAt: new Date().toISOString(),
-            _updatedAt: new Date().toISOString(),
-            _rev: `rev-${Date.now()}`,
-            name: userInfo.name || undefined,
-            username: userInfo.username || undefined,
-            email: userInfo.email || undefined,
-            image: userInfo.image || undefined,
-            bio: userInfo.bio || undefined,
-        };
-        
-        if (existingUserIndex >= 0) {
-            // 更新现有用户
-            users[existingUserIndex] = { ...users[existingUserIndex], ...newUser, _updatedAt: new Date().toISOString() };
-        } else {
-            // 添加新用户
-            users.push(newUser);
-        }
-        
-        // 保存到文件
-        fs.writeFileSync(userFilePath, JSON.stringify(users, null, 2));
+        await createOrUpdateAuthor({
+            id: userInfo.id,
+            name: userInfo.name || '',
+            username: userInfo.username || '',
+            email: userInfo.email || '',
+            image: userInfo.image || '',
+            bio: userInfo.bio || ''
+        });
     } catch (error) {
         console.error('保存用户信息失败:', error);
     }
@@ -93,8 +63,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 session.user.username = token.username as string;
                 session.user.bio = token.bio as string;
                 
-                // 保存用户信息到mock/user.json
-                await saveUserToMockData({
+                // 保存用户信息到数据库
+                await saveUserToDatabase({
                     id: token.userId as string,
                     name: session.user.name,
                     email: session.user.email,

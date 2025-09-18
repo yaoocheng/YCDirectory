@@ -11,8 +11,9 @@ export default async function Home({
     // 通过API请求获取数据，包含搜索查询参数
     const searchQuery = query ? `?query=${encodeURIComponent(query)}` : '';
     const response = await fetch(`${process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'}/api/startup-data${searchQuery}`, {
-        next: { revalidate: 10 }, // 确保每次都获取最新数据
+        cache: 'no-cache', // 确保每次都获取最新数据
     });
+
 
     if (!response.ok) {
         throw new Error('Failed to fetch startup data');
@@ -20,41 +21,10 @@ export default async function Home({
 
     const postsData = await response.json();
 
-    // 转换日期字符串为Date对象
-    const posts: StartupTypeCard[] = postsData.map((post: {
-        _id: string;
-        _type: string;
-        _createdAt: string;
-        _updatedAt: string;
-        _rev: string;
-        views: number;
-        author: {
-            _id: string;
-            _type: string;
-            _createdAt: string;
-            _updatedAt: string;
-            _rev: string;
-            name: string;
-            username: string;
-            email: string;
-            image: string;
-            bio: string;
-        };
-        category: string;
-        title: string;
-        description: string;
-        image: string;
-        pitch: string;
-    }) => ({
-        ...post,
-        _createdAt: new Date(post._createdAt),
-        _updatedAt: new Date(post._updatedAt),
-        author: {
-            ...post.author,
-            _createdAt: new Date(post.author._createdAt),
-            _updatedAt: new Date(post.author._updatedAt),
-        },
-    }));
+
+
+    // 直接使用从数据库返回的数据，不需要转换
+    const posts: StartupTypeCard[] = postsData;
 
     return (
         <>

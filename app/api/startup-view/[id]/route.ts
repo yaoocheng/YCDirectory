@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
-import { Startup } from "@/types/types";
+import { getStartupById, updateStartupViews } from '@/lib/db-operations';
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
@@ -11,33 +9,20 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
             return NextResponse.json({ error: "Startup ID is required" }, { status: 400 });
         }
 
-        // 读取startup.json文件
-        const startupFilePath = path.join(process.cwd(), 'public', 'startup.json');
-        
-        if (!fs.existsSync(startupFilePath)) {
-            return NextResponse.json({ error: "Startup data file not found" }, { status: 404 });
-        }
-
-        const fileContent = fs.readFileSync(startupFilePath, 'utf-8');
-        const startups: Startup[] = JSON.parse(fileContent);
-        
-        // 查找对应的startup
-        const startupIndex = startups.findIndex(startup => startup._id === id);
-        
-        if (startupIndex === -1) {
+        // 检查startup是否存在
+        const startup = await getStartupById(id);
+        if (!startup) {
             return NextResponse.json({ error: "Startup not found" }, { status: 404 });
         }
         
-        // 更新views数据
-        startups[startupIndex].views = (startups[startupIndex].views || 0) + 1;
-        startups[startupIndex]._updatedAt = new Date().toISOString();
-        
-        // 保存更新后的数据
-        fs.writeFileSync(startupFilePath, JSON.stringify(startups, null, 2));
+        // 增加 views 计数
+         const currentViews = startup.views || 0;
+         const newViews = currentViews + 1;
+         await updateStartupViews(id, newViews);
         
         return NextResponse.json({ 
             success: true, 
-            views: startups[startupIndex].views,
+            views: newViews,
             message: "Views updated successfully" 
         });
         
@@ -58,18 +43,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
             return NextResponse.json({ error: "Startup ID is required" }, { status: 400 });
         }
 
-        // 读取startup.json文件
-        const startupFilePath = path.join(process.cwd(), 'public', 'startup.json');
-        
-        if (!fs.existsSync(startupFilePath)) {
-            return NextResponse.json({ error: "Startup data file not found" }, { status: 404 });
-        }
-
-        const fileContent = fs.readFileSync(startupFilePath, 'utf-8');
-        const startups: Startup[] = JSON.parse(fileContent);
-        
-        // 查找对应的startup
-        const startup = startups.find(startup => startup._id === id);
+        const startup = await getStartupById(id);
         
         if (!startup) {
             return NextResponse.json({ error: "Startup not found" }, { status: 404 });

@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { getStartupsByAuthor } from '@/lib/db-operations';
 
 interface Author {
   _id: string;
@@ -30,11 +29,7 @@ export async function GET(
     try {
         const { id } = await params;
 
-        const filePath = path.join(process.cwd(), 'public', 'startup.json');
-        const fileContents = fs.readFileSync(filePath, 'utf8');
-        const posts: Startup[] = JSON.parse(fileContents);
-        
-        const userStartups = posts.filter(item => item.author._id === id);
+        const userStartups = await getStartupsByAuthor(id);
 
         if (userStartups.length === 0) {
             return NextResponse.json(

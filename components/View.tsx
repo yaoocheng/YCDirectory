@@ -12,7 +12,6 @@ const View = async ({ postsData }: { postsData: Startup }) => {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ views: views + 1 })
         });
         
         console.log(`正在更新文章 ${postsData._id} 的浏览量为 ${views + 1}`);

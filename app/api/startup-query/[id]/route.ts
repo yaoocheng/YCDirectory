@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { getStartupById } from '@/lib/db-operations';
 
 interface Author {
   _id: string;
@@ -30,20 +29,16 @@ export async function GET(
     try {
         const { id } = await params;
 
-        const filePath = path.join(process.cwd(), 'public', 'startup.json');
-        const fileContents = fs.readFileSync(filePath, 'utf8');
-        const posts: Startup[] = JSON.parse(fileContents);
-        
-        const post = posts.find((post: Startup) => post._id === id);
+        const startup = await getStartupById(id);
 
-        if (!post) {
+        if (!startup) {
             return NextResponse.json(
                 { error: 'Startup not found' },
                 { status: 404 }
             );
         }
 
-        return NextResponse.json(post);
+        return NextResponse.json(startup);
     } catch (error) {
         console.error('Error reading startup data:', error);
         return NextResponse.json(

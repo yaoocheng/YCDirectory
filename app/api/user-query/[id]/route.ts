@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { getAuthorById } from '@/lib/db-operations';
 
 interface Author {
   _id: string;
@@ -20,15 +19,11 @@ export async function GET(
     try {
         const { id } = await params;
 
-        const filePath = path.join(process.cwd(), 'public', 'user.json');
-        const fileContents = fs.readFileSync(filePath, 'utf8');
-        const users: Author[] = JSON.parse(fileContents);
-        
-        const user = users.find(item => item._id === id);
+        const user = await getAuthorById(id);
 
         if (!user) {
             return NextResponse.json(
-                { error: 'No user found for this id' },
+                { error: 'User not found' },
                 { status: 404 }
             );
         }
