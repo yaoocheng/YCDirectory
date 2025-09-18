@@ -1,19 +1,16 @@
 import { after } from "next/server";
 import Ping from "./Ping";
-import { Startup } from "@/types";
+import { updateStartupViews } from "@/lib/db-operations";
+import { Startup } from "@/types/types";
+
+// 数据库返回的Startup类型
 
 const View = async ({ postsData }: { postsData: Startup }) => {
-    const views = await postsData.views;
+    const views = postsData.views || 0;
 
     after(async () => {
-        // 这是你更新数据库的代码
-        await fetch(`${process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'}/api/startup-view/${postsData._id}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        });
-        
+        // 直接调用数据库函数更新浏览量
+        await updateStartupViews(postsData._id, views + 1);
         console.log(`正在更新文章 ${postsData._id} 的浏览量为 ${views + 1}`);
     });
 

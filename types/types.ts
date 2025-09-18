@@ -1,39 +1,28 @@
 
-export type Startup = {
+// 定义数据类型接口
+export interface Author {
   _id: string;
-  _type: "startup";
-  _createdAt: Date;
-  _updatedAt: string;
-  _rev: string;
-  title?: string;
-  slug?: Slug;
-  author?: {
-    _ref: string;
-    _type: "reference";
-    _weak?: boolean;
-    [internalGroqTypeReferenceTo]?: "author";
-  };
-  views?: number;
-  description?: string;
-  category?: string;
-  image?: string;
-  pitch?: string;
-};
-
-
-export type Author = {
-  _id: string;
-  _type: "author";
+  name: string;
+  username: string;
+  email: string;
+  image: string;
+  bio: string;
   _createdAt: string;
   _updatedAt: string;
-  _rev: string;
-  id?: number;
-  name?: string;
-  username?: string;
-  email?: string;
-  image?: string;
-  bio?: string;
-};
+}
+
+export interface Startup {
+  _id: string;
+  title: string;
+  description: string;
+  category: string;
+  image: string;
+  pitch: string;
+  views: number;
+  _createdAt: string;
+  _updatedAt: string;
+  author: Author;
+}
 
 
 export type Slug = {

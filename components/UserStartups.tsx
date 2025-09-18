@@ -1,12 +1,13 @@
 import React from "react";
-import StartupCard, { StartupTypeCard } from "@/components/StartupCard";
+import StartupCard from "@/components/StartupCard";
+import { Startup } from "@/types/types";
 
-const UserStartups = async ({ startupUserData }: { startupUserData: StartupTypeCard[] }) => {
+const UserStartups = async ({ startupUserData }: { startupUserData: Startup[] }) => {
 
   return (
     <>
       {startupUserData.length > 0 ? (
-        startupUserData.map((startup: StartupTypeCard) => (
+        startupUserData.map((startup) => (
           <StartupCard key={startup._id} post={startup} />
         ))
       ) : (

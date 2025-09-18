@@ -19,3 +19,4 @@ export interface Startup {
   _createdAt: string;
   _updatedAt?: string;
 }
+
