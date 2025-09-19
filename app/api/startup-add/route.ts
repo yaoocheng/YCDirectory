@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { createStartup } from '@/lib/db-operations';
+import { formSchema } from '@/lib/validat';
 
 // interface Author {
 //   _id: string;
@@ -36,8 +37,7 @@ import { createStartup } from '@/lib/db-operations';
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { title, description, category, link, pitch } = body;
-
+    
     const session = await auth();
     
     // 检查用户是否已登录
@@ -48,13 +48,27 @@ export async function POST(request: Request) {
       );
     }
 
-    // 验证必填字段
-    if (!title || !description || !category || !link || !pitch) {
+    // 使用 Zod 验证数据
+    const validationResult = formSchema.safeParse(body);
+    
+    if (!validationResult.success) {
+       const fieldErrors: Record<string, string> = {};
+       validationResult.error.issues.forEach((issue) => {
+         if (issue.path && issue.path.length > 0) {
+           fieldErrors[String(issue.path[0])] = issue.message;
+         }
+       });
+      
       return NextResponse.json(
-        { error: 'All fields are required' },
+        { 
+          error: 'Validation failed',
+          fieldErrors 
+        },
         { status: 400 }
       );
     }
+
+    const { title, description, category, link, pitch } = validationResult.data;
 
     // 使用SQL函数创建startup
     const startupId = await createStartup({

@@ -26,6 +26,9 @@ function StartupForm() {
                 pitch,
             };
 
+            // 清除之前的错误
+            setErrors({});
+
             // 验证表单数据
             await formSchema.parseAsync(formValues);
 
@@ -52,16 +55,17 @@ function StartupForm() {
         } catch (error: unknown) {
             console.error("Form submission error:", error);
 
-            if (error && typeof error === 'object' && 'errors' in error) {
-                // Zod validation errors
+            if (error && typeof error === 'object' && 'issues' in error) {
+                // Zod validation errors - 正确的属性名是 'issues' 不是 'errors'
                 const fieldErrors: Record<string, string> = {};
-                const zodError = error as { errors: Array<{ path?: string[]; message: string }> };
-                zodError.errors.forEach((err) => {
-                    if (err.path && err.path.length > 0) {
-                        fieldErrors[err.path[0]] = err.message;
+                const zodError = error as { issues: Array<{ path: string[]; message: string }> };
+                zodError.issues.forEach((issue) => {
+                    if (issue.path && issue.path.length > 0) {
+                        fieldErrors[issue.path[0]] = issue.message;
                     }
                 });
                 setErrors(fieldErrors);
+                toast.error("请检查表单中的错误信息");
             } else {
                 const errorMessage = error instanceof Error ? error.message : "Failed to submit startup. Please try again.";
                 toast.error(errorMessage);

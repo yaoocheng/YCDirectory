@@ -8,10 +8,9 @@ import { Startup } from "@/types/types";
 const View = async ({ postsData }: { postsData: Startup }) => {
     const views = postsData.views || 0;
 
-    after(async () => {
+    after(() => {
         // 直接调用数据库函数更新浏览量
-        await updateStartupViews(postsData._id, views + 1);
-        console.log(`正在更新文章 ${postsData._id} 的浏览量为 ${views + 1}`);
+        updateStartupViews(postsData._id, views + 1);
     });
 
     return (
