@@ -3,6 +3,7 @@ import NextAuth from "next-auth"
 import GitHub from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
 import { createOrUpdateAuthor } from "@/lib/db-operations";
+// import { sendVerificationRequest } from "@/lib/authSendRequest";
 
 // 基于用户信息生成固定的唯一ID
 function generateUserBasedId(userEmail: string, userName: string): string {
@@ -54,7 +55,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                     scope: "openid email profile"
                 }
             }
-        })
+        }),
+        // {
+        //     id: "http-email",
+        //     type: "email",
+        //     name: "Email",
+        //     sendVerificationRequest,
+        //     maxAge: 60 * 60 * 24, // 24h 过期
+        // },
     ],
     callbacks: {
         async jwt({ token, user, profile, account }) {
