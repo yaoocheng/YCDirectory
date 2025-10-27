@@ -20,3 +20,9 @@ export interface Startup {
   _updatedAt?: string;
 }
 
+
+export interface Message {
+    type: 'user' | 'bot';
+    content: string;
+}
+

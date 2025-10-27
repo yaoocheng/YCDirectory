@@ -204,6 +204,51 @@
 }
 
 
+/* HTML: <div class="loader"></div> */
+.loader {
+    width: 30px;
+    aspect-ratio: 4;
+    --c: #333333 90%, #0000;
+    background:
+        radial-gradient(circle closest-side at left 6px top 50%, var(--c)),
+        radial-gradient(circle closest-side, var(--c)),
+        radial-gradient(circle closest-side at right 6px top 50%, var(--c));
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    animation: l4 1s infinite alternate;
+}
+
+@keyframes l4 {
+    to {
+        width: 16px;
+        aspect-ratio: 1
+    }
+}
+
+/* globals.css 或你的样式文件 */
+
+/* 定义闪烁动画 */
+@keyframes blink {
+    0%, 100% { 
+        opacity: 1; 
+    }
+    50% { 
+        opacity: 0; 
+    }
+}
+
+/* 应用于光标元素 */
+.typing-cursor {
+    display: inline-block; /* 确保它能保持高度 */
+    width: 2px; /* 光标的宽度 */
+    height: 1em; /* 与文本高度一致 */
+    vertical-align: -2px;
+    background-color: currentColor; /* 使用当前文本颜色 */
+    animation: blink 1s step-end infinite; /* 应用闪烁动画 */
+    margin-left: 2px; /* 与文本留点间距 */
+}
+
+
 
 
 /* 
