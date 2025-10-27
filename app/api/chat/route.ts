@@ -2,7 +2,7 @@ import { ChatAlibabaTongyi } from "@langchain/community/chat_models/alibaba_tong
 import { HumanMessage, AIMessage } from "@langchain/core/messages";
 
 
-let memory: { type: string, content: string }[] = [];
+const memory: { type: string, content: string }[] = [];
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
