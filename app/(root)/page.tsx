@@ -33,14 +33,14 @@ export default async function Home({
                         {query ? `搜索结果："${query}"` : '所有创业项目'}
                     </p>
 
-                    <SortButtons query={query} />
+                    {posts.length > 0 && <SortButtons query={query} />}
 
                     <ul className="card_grid mt-7">
                         {
                             posts.length > 0 ? posts?.map((post) => (
                                 <StartupCard key={post._id} post={post} />
                             )) : (
-                                <p className="no-results text-center text-gray-400">暂无数据</p>
+                                <p className="no-results text-gray-400">暂无数据</p>
                             )
                         }
                     </ul>

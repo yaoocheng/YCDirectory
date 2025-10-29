@@ -1,14 +1,14 @@
 import { formatDate } from "@/lib/utils";
-import { EyeIcon } from "lucide-react";
+import { EyeIcon,Trash2 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { revalidatePath } from "next/cache";
 import { Startup } from "@/types/types";
 import { auth } from "@/auth";
 import { ThumbsUp } from "lucide-react"
 import { deleteStartupById } from "@/lib/db-operations";
+import EditStartup from "@/components/EditStartup";
 
 const StartupCard = async ({ id, post }: { id?: string, post: Startup }) => {
     const {
@@ -34,7 +34,6 @@ const StartupCard = async ({ id, post }: { id?: string, post: Startup }) => {
             console.error("Error deleting startup:", error);
         }
     };
-
 
     return (
         <li className="startup-card group">
@@ -96,7 +95,10 @@ const StartupCard = async ({ id, post }: { id?: string, post: Startup }) => {
 
                 <div className="flex gap-2 items-center">
                     {id && session?.user?.id === id && (
-                        <Trash2 onClick={deleteStartup} className="size-6 cursor-pointer transition-transform hover:scale-110 text-black-200" />
+                        <div className="flex gap-2 items-center">
+                            <EditStartup id={_id} />
+                            <Trash2 onClick={deleteStartup} className="size-5 cursor-pointer transition-transform hover:scale-110 text-black-200" />
+                        </div>
                     )}
                     <Button className="startup-card_btn" asChild>
                         <Link href={`/startup/${_id}`}>详情</Link>

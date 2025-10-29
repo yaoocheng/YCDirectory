@@ -455,7 +455,6 @@ export async function createOrUpdateAuthor(author: {
   }
 }
 
-
 // 创建新的startup
 export async function createStartup(startup: {
   title: string;
@@ -466,19 +465,60 @@ export async function createStartup(startup: {
   pitch: string;
 }): Promise<string> {
   try {
-    const id = Date.now().toString(); // 简单的ID生成
-    
+    const id = Date.now().toString(); // 简单生成 ID
+
+    // 获取当前北京时间
+    const now = new Date();
+    const offset = 8 * 60; // 东八区
+    const localDate = new Date(now.getTime() + offset * 60 * 1000);
+    const formattedDate = localDate.toISOString().replace('T', ' ').replace('Z', '');
+
     await sql`
       INSERT INTO startups (id, title, description, category, author_id, image, pitch, views, created_at, updated_at)
-      VALUES (${id}, ${startup.title}, ${startup.description}, ${startup.category}, ${startup.author_id}, ${startup.image}, ${startup.pitch}, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+      VALUES (${id}, ${startup.title}, ${startup.description}, ${startup.category}, ${startup.author_id}, ${startup.image}, ${startup.pitch}, 0, ${formattedDate}, ${formattedDate})
     `;
-    
+
     return id;
   } catch (error) {
     console.error('创建startup失败:', error);
     throw new Error('Failed to create startup');
   }
 }
+
+// 更新startup信息
+export async function updateStartup(startup: {
+  id?: string;
+  title?: string;
+  description?: string;
+  category?: string;
+  image?: string;
+  pitch?: string;
+}): Promise<void> {
+  try {
+    const now = new Date();
+    const offset = 8 * 60;
+    const localDate = new Date(now.getTime() + offset * 60 * 1000);
+    const formattedDate = localDate.toISOString().replace('T', ' ').replace('Z', '');
+
+    await sql`
+      UPDATE startups
+      SET 
+        title = COALESCE(${startup.title}, title),
+        description = COALESCE(${startup.description}, description),
+        category = COALESCE(${startup.category}, category),
+        image = COALESCE(${startup.image}, image),
+        pitch = COALESCE(${startup.pitch}, pitch),
+        updated_at = ${formattedDate}
+      WHERE id = ${startup.id}
+    `;
+  } catch (error) {
+    console.error('更新startup失败:', error);
+    throw new Error('Failed to update startup');
+  }
+}
+
+
+
 
 
 // 点赞（如果已经点过就忽略）

@@ -30,7 +30,6 @@ export default function Comments({ startupId, comments }: { startupId: string, c
     const [submitting, setSubmitting] = useState(false);
     const [commentsState, setCommentsState] = useState<Comment[]>(() => comments);
     const { data: session } = useSession();
-    console.log(comments);
     
     const handleSubmit = async () => {
         if (!session?.user?.id) {
@@ -63,7 +62,7 @@ export default function Comments({ startupId, comments }: { startupId: string, c
                 author_name: session.user.name || '',
                 author_image: session.user.image || '',
                 content: inputValue,
-                created_at: new Date().toISOString(),
+                created_at: new Date().toLocaleString(),
             }, ...prev]);
         } catch (error) {
             console.error('添加评论时出错:', error);
