@@ -47,7 +47,7 @@ export default function LikeButton() {
 
     const likehandle = async () => {
         if (!session) {
-            toast.error("Please Login");
+            toast.error("请登录");
             return;
         }
         setLiked(!liked);

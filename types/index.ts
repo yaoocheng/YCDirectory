@@ -33,5 +33,6 @@ export type Comment = {
     author_image?: string;
     content: string;
     created_at: string;
+    author_id: string;
 };
 

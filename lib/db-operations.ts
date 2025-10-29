@@ -559,6 +559,7 @@ export async function getCommentsByStartupId(startupId: string): Promise<Comment
   `;
   return result.map((row) => ({
     id: row.id,
+    author_id: row.author_id,
     author_name: row.author_name,
     author_image: row.author_image,
     content: row.content,

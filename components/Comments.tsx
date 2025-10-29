@@ -12,12 +12,15 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/popover';
+import Link from 'next/link';
+
 const { TextArea } = Input;
 
 export type Comment = {
     id: string;
     author_name: string;
     author_image?: string;
+    author_id: string;
     content: string;
     created_at: string;
 };
@@ -27,7 +30,8 @@ export default function Comments({ startupId, comments }: { startupId: string, c
     const [submitting, setSubmitting] = useState(false);
     const [commentsState, setCommentsState] = useState<Comment[]>(() => comments);
     const { data: session } = useSession();
-
+    console.log(comments);
+    
     const handleSubmit = async () => {
         if (!session?.user?.id) {
             return;
@@ -55,6 +59,7 @@ export default function Comments({ startupId, comments }: { startupId: string, c
             setInputValue('');
             setCommentsState((prev) => [{
                 id: Date.now().toString(),
+                author_id: session.user.id || '',
                 author_name: session.user.name || '',
                 author_image: session.user.image || '',
                 content: inputValue,
@@ -113,8 +118,16 @@ export default function Comments({ startupId, comments }: { startupId: string, c
                 renderItem={(item) => (
                     <List.Item>
                         <List.Item.Meta
-                            avatar={<Avatar src={item.author_image} />}
-                            title={item.author_name}
+                            avatar={
+                                <Link href={`/user/${item.author_id}`}>
+                                    <Avatar src={item.author_image} />
+                                </Link>
+                            }
+                            title={
+                                <Link href={`/user/${item.author_id}`}>
+                                    {item.author_name}
+                                </Link>
+                            }
                             description={
                                 <>
                                     <p className='text-black text-sm my-1.5'>{item.content}</p>
