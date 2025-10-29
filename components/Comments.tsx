@@ -68,7 +68,7 @@ export default function Comments({ startupId, comments }: { startupId: string, c
     };
 
     return (
-        <div className="simple-comment mt-5">
+        <div className="simple-comment mt-5 max-w-4xl mx-auto">
             <div className="text-xl font-bold mb-3">
                 评论 {commentsState.length}
             </div>
