@@ -2,7 +2,7 @@ import React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { auth, signOut, signIn } from '@/auth'
-import EmailLoginComp from './EmailLogin';
+// import EmailLoginComp from './EmailLogin';
 
 export default async function NavBar() {
     const session = await auth();
@@ -19,7 +19,7 @@ export default async function NavBar() {
                         {session && session?.user ? (
                             <>
                                 <Link href="/startup/create">
-                                    <span>Create</span>
+                                    <span>创建</span>
                                 </Link>
 
                                 <button className='cursor-pointer' onClick={async () => {
@@ -27,7 +27,7 @@ export default async function NavBar() {
 
                                     await signOut({ redirectTo: '/' })
                                 }}>
-                                    <span className='text-red-600'>logout</span>
+                                    <span className='text-red-600'>登出</span>
                                 </button>
 
                                 <Link href={`/user/${session?.user?.id}`}>

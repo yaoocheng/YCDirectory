@@ -1,4 +1,5 @@
 import { sql } from './db';
+import { Comment } from '@/types';
 
 // 定义数据类型接口
 export interface Author {
@@ -20,6 +21,7 @@ export interface Startup {
   image: string;
   pitch: string;
   views: number;
+  likes_count: number;
   _createdAt: string;
   _updatedAt: string;
   author: Author;
@@ -34,6 +36,7 @@ interface DbRow {
   image: string;
   pitch: string;
   views: number;
+  likes_count: number;
   _createdAt: string;
   _updatedAt: string;
   author_id: string;
@@ -46,70 +49,129 @@ interface DbRow {
   author_updatedAt: string;
 }
 
-// 获取所有startups，支持搜索
-export async function getStartups(searchQuery?: string): Promise<Startup[]> {
+export async function deleteStartupById(id: string) {
   try {
+    await sql`DELETE FROM startups WHERE id = ${id}`;
+  } catch (error) {
+    console.error("Error deleting startup:", error);
+    throw error;
+  }
+}
+
+// 获取所有startups，支持搜索和排序
+export async function getStartups(
+  searchQuery?: string,
+  sortBy: 'latest' | 'views' | 'like' = 'latest'
+): Promise<Startup[]> {
+  try {
+    // 生成 ORDER BY 子句字符串
+    // let orderBy = 's.created_at DESC';
+    // if (sortBy === 'views') orderBy = 's.views DESC';
+    // if (sortBy === 'like') orderBy = 's.likes_count DESC';
+
     let query;
-    
+
     if (searchQuery) {
       const searchTerm = `%${searchQuery.toLowerCase()}%`;
-      query = sql`
-        SELECT 
-          s.id as "_id",
-          s.title,
-          s.description,
-          s.category,
-          s.image,
-          s.pitch,
-          s.views,
-          s.created_at as "_createdAt",
-          s.updated_at as "_updatedAt",
-          a.id as "author_id",
-          a.name as "author_name",
-          a.username as "author_username",
-          a.email as "author_email",
-          a.image as "author_image",
-          a.bio as "author_bio",
-          a.created_at as "author_createdAt",
-          a.updated_at as "author_updatedAt"
-        FROM startups s
-        LEFT JOIN authors a ON s.author_id = a.id
-        WHERE 
-          LOWER(s.title) LIKE ${searchTerm} OR
-          LOWER(s.description) LIKE ${searchTerm} OR
-          LOWER(s.category) LIKE ${searchTerm} OR
-          LOWER(a.name) LIKE ${searchTerm}
-        ORDER BY s.created_at DESC
-      `;
+
+      if (sortBy === 'views') {
+        query = sql`
+          SELECT 
+            s.id as "_id", s.title, s.description, s.category, s.image, s.pitch,
+            s.views, s.likes_count,
+            s.created_at as "_createdAt", s.updated_at as "_updatedAt",
+            a.id as "author_id", a.name as "author_name", a.username as "author_username",
+            a.email as "author_email", a.image as "author_image", a.bio as "author_bio",
+            a.created_at as "author_createdAt", a.updated_at as "author_updatedAt"
+          FROM startups s
+          LEFT JOIN authors a ON s.author_id = a.id
+          WHERE LOWER(s.title) LIKE ${searchTerm} OR
+                LOWER(s.description) LIKE ${searchTerm} OR
+                LOWER(s.category) LIKE ${searchTerm} OR
+                LOWER(a.name) LIKE ${searchTerm}
+          ORDER BY s.views DESC
+        `;
+      } else if (sortBy === 'like') {
+        query = sql`
+          SELECT 
+            s.id as "_id", s.title, s.description, s.category, s.image, s.pitch,
+            s.views, s.likes_count,
+            s.created_at as "_createdAt", s.updated_at as "_updatedAt",
+            a.id as "author_id", a.name as "author_name", a.username as "author_username",
+            a.email as "author_email", a.image as "author_image", a.bio as "author_bio",
+            a.created_at as "author_createdAt", a.updated_at as "author_updatedAt"
+          FROM startups s
+          LEFT JOIN authors a ON s.author_id = a.id
+          WHERE LOWER(s.title) LIKE ${searchTerm} OR
+                LOWER(s.description) LIKE ${searchTerm} OR
+                LOWER(s.category) LIKE ${searchTerm} OR
+                LOWER(a.name) LIKE ${searchTerm}
+          ORDER BY s.likes_count DESC
+        `;
+      } else {
+        query = sql`
+          SELECT 
+            s.id as "_id", s.title, s.description, s.category, s.image, s.pitch,
+            s.views, s.likes_count,
+            s.created_at as "_createdAt", s.updated_at as "_updatedAt",
+            a.id as "author_id", a.name as "author_name", a.username as "author_username",
+            a.email as "author_email", a.image as "author_image", a.bio as "author_bio",
+            a.created_at as "author_createdAt", a.updated_at as "author_updatedAt"
+          FROM startups s
+          LEFT JOIN authors a ON s.author_id = a.id
+          WHERE LOWER(s.title) LIKE ${searchTerm} OR
+                LOWER(s.description) LIKE ${searchTerm} OR
+                LOWER(s.category) LIKE ${searchTerm} OR
+                LOWER(a.name) LIKE ${searchTerm}
+          ORDER BY s.created_at DESC
+        `;
+      }
     } else {
-      query = sql`
-        SELECT 
-          s.id as "_id",
-          s.title,
-          s.description,
-          s.category,
-          s.image,
-          s.pitch,
-          s.views,
-          s.created_at as "_createdAt",
-          s.updated_at as "_updatedAt",
-          a.id as "author_id",
-          a.name as "author_name",
-          a.username as "author_username",
-          a.email as "author_email",
-          a.image as "author_image",
-          a.bio as "author_bio",
-          a.created_at as "author_createdAt",
-          a.updated_at as "author_updatedAt"
-        FROM startups s
-        LEFT JOIN authors a ON s.author_id = a.id
-        ORDER BY s.created_at DESC
-      `;
+      // 无搜索条件
+      if (sortBy === 'views') {
+        query = sql`
+          SELECT 
+            s.id as "_id", s.title, s.description, s.category, s.image, s.pitch,
+            s.views, s.likes_count,
+            s.created_at as "_createdAt", s.updated_at as "_updatedAt",
+            a.id as "author_id", a.name as "author_name", a.username as "author_username",
+            a.email as "author_email", a.image as "author_image", a.bio as "author_bio",
+            a.created_at as "author_createdAt", a.updated_at as "author_updatedAt"
+          FROM startups s
+          LEFT JOIN authors a ON s.author_id = a.id
+          ORDER BY s.views DESC
+        `;
+      } else if (sortBy === 'like') {
+        query = sql`
+          SELECT 
+            s.id as "_id", s.title, s.description, s.category, s.image, s.pitch,
+            s.views, s.likes_count,
+            s.created_at as "_createdAt", s.updated_at as "_updatedAt",
+            a.id as "author_id", a.name as "author_name", a.username as "author_username",
+            a.email as "author_email", a.image as "author_image", a.bio as "author_bio",
+            a.created_at as "author_createdAt", a.updated_at as "author_updatedAt"
+          FROM startups s
+          LEFT JOIN authors a ON s.author_id = a.id
+          ORDER BY s.likes_count DESC
+        `;
+      } else {
+        query = sql`
+          SELECT 
+            s.id as "_id", s.title, s.description, s.category, s.image, s.pitch,
+            s.views, s.likes_count,
+            s.created_at as "_createdAt", s.updated_at as "_updatedAt",
+            a.id as "author_id", a.name as "author_name", a.username as "author_username",
+            a.email as "author_email", a.image as "author_image", a.bio as "author_bio",
+            a.created_at as "author_createdAt", a.updated_at as "author_updatedAt"
+          FROM startups s
+          LEFT JOIN authors a ON s.author_id = a.id
+          ORDER BY s.created_at DESC
+        `;
+      }
     }
 
     const results = await query;
-    
-    // 转换数据格式以匹配原有的JSON结构
+
     return (results as DbRow[]).map((row) => ({
       _id: row._id,
       title: row.title,
@@ -118,6 +180,7 @@ export async function getStartups(searchQuery?: string): Promise<Startup[]> {
       image: row.image,
       pitch: row.pitch,
       views: row.views,
+      likes_count: row.likes_count,
       _createdAt: row._createdAt,
       _updatedAt: row._updatedAt,
       author: {
@@ -137,6 +200,7 @@ export async function getStartups(searchQuery?: string): Promise<Startup[]> {
   }
 }
 
+
 // 根据ID获取单个startup
 export async function getStartupById(id: string): Promise<Startup | null> {
   try {
@@ -149,6 +213,7 @@ export async function getStartupById(id: string): Promise<Startup | null> {
         s.image,
         s.pitch,
         s.views,
+        s.likes_count,
         s.created_at as "_createdAt",
         s.updated_at as "_updatedAt",
         a.id as "author_id",
@@ -176,6 +241,7 @@ export async function getStartupById(id: string): Promise<Startup | null> {
       image: row.image,
       pitch: row.pitch,
       views: row.views,
+      likes_count: row.likes_count,
       _createdAt: row._createdAt,
       _updatedAt: row._updatedAt,
       author: {
@@ -207,6 +273,7 @@ export async function getStartupsByAuthor(authorId: string): Promise<Startup[]> 
         s.image,
         s.pitch,
         s.views,
+        s.likes_count,
         s.created_at as "_createdAt",
         s.updated_at as "_updatedAt",
         a.id as "author_id",
@@ -231,6 +298,7 @@ export async function getStartupsByAuthor(authorId: string): Promise<Startup[]> 
       image: row.image,
       pitch: row.pitch,
       views: row.views,
+      likes_count: row.likes_count,
       _createdAt: row._createdAt,
       _updatedAt: row._updatedAt,
       author: {
@@ -262,6 +330,7 @@ export async function getSimilarStartups(id: string, category: string, limit: nu
         s.image,
         s.pitch,
         s.views,
+        s.likes_count,
         s.created_at as "_createdAt",
         s.updated_at as "_updatedAt",
         a.id as "author_id",
@@ -287,6 +356,7 @@ export async function getSimilarStartups(id: string, category: string, limit: nu
       image: row.image,
       pitch: row.pitch,
       views: row.views,
+      likes_count: row.likes_count,
       _createdAt: row._createdAt,
       _updatedAt: row._updatedAt,
       author: {
@@ -342,13 +412,14 @@ export async function getAuthorById(id: string): Promise<Author | null> {
   }
 }
 
-// 更新startup浏览量
-export async function updateStartupViews(id: string, views: number): Promise<boolean> {
+// 原子性更新浏览量
+export async function updateStartupViews(id: string): Promise<boolean> {
   try {
     await sql`
-      UPDATE startups 
-      SET views = ${views}, updated_at = CURRENT_TIMESTAMP
-      WHERE id = ${id}
+      UPDATE startups
+      SET views = views + 1,
+          updated_at = CURRENT_TIMESTAMP
+      WHERE id = ${id};
     `;
     return true;
   } catch (error) {
@@ -356,6 +427,7 @@ export async function updateStartupViews(id: string, views: number): Promise<boo
     return false;
   }
 }
+
 
 // 创建或更新作者信息
 export async function createOrUpdateAuthor(author: {
@@ -413,4 +485,91 @@ export async function createStartup(startup: {
     console.error('创建startup失败:', error);
     throw new Error('Failed to create startup');
   }
+}
+
+
+// 点赞（如果已经点过就忽略）
+export async function likeStartup(userId: string, startupId: string): Promise<void> {
+  try {
+    const id = Date.now().toString(); // 简单生成 id
+
+    await sql`
+      INSERT INTO likes (id, author_id, startup_id)
+      VALUES (${id}, ${userId}, ${startupId})
+      ON CONFLICT (author_id, startup_id) DO NOTHING
+    `;
+  } catch (error) {
+    console.error('点赞失败:', error);
+    throw new Error('Failed to like startup');
+  }
+}
+
+// 取消点赞
+export async function unlikeStartup(userId: string, startupId: string): Promise<void> {
+  try {
+    await sql`
+      DELETE FROM likes
+      WHERE author_id = ${userId} AND startup_id = ${startupId}
+    `;
+  } catch (error) {
+    console.error('取消点赞失败:', error);
+    throw new Error('Failed to unlike startup');
+  }
+}
+
+// 检查当前用户是否已点赞
+export async function hasLiked(userId: string, startupId: string): Promise<boolean> {
+  try {
+    const result = await sql`
+      SELECT 1 FROM likes
+      WHERE author_id = ${userId} AND startup_id = ${startupId}
+      LIMIT 1
+    `;
+    return result.length > 0;
+  } catch (error) {
+    console.error('查询点赞状态失败:', error);
+    throw new Error('Failed to check like status');
+  }
+}
+
+// 获取 startup 的点赞总数
+export async function getLikesCount(startupId: string): Promise<number> {
+  try {
+    const result = await sql`
+      SELECT COUNT(*) AS count FROM likes
+      WHERE startup_id = ${startupId}
+    `;
+    return Number(result[0].count);
+  } catch (error) {
+    console.error('获取点赞数量失败:', error);
+    throw new Error('Failed to get likes count');
+  }
+}
+
+// 获取 startup 的评论列表
+export async function getCommentsByStartupId(startupId: string): Promise<Comment[]> {
+  const result = await sql`
+    SELECT 
+      c.id, c.content, c.created_at,
+      a.id as author_id, a.name as author_name, a.image as author_image
+    FROM comments c
+    JOIN authors a ON c.author_id = a.id
+    WHERE c.startup_id = ${startupId}
+    ORDER BY c.created_at DESC;
+  `;
+  return result.map((row) => ({
+    id: row.id,
+    author_name: row.author_name,
+    author_image: row.author_image,
+    content: row.content,
+    created_at: row.created_at,
+  }));
+}
+
+// 添加评论
+export async function addComment(startupId: string, authorId: string, content: string) {
+  await sql`
+    INSERT INTO comments (startup_id, author_id, content)
+    VALUES (${startupId}, ${authorId}, ${content});
+  `;
 }

@@ -19,6 +19,7 @@ export interface Startup {
   image: string;
   pitch: string;
   views: number;
+  likes_count: number;
   _createdAt: string;
   _updatedAt: string;
   author: Author;

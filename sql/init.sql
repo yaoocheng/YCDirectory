@@ -77,3 +77,62 @@ CREATE INDEX IF NOT EXISTS idx_startups_category ON startups(category);
 CREATE INDEX IF NOT EXISTS idx_startups_created_at ON startups(created_at);
 CREATE INDEX IF NOT EXISTS idx_authors_username ON authors(username);
 CREATE INDEX IF NOT EXISTS idx_authors_email ON authors(email);
+
+-- 6. 创建 likes 表（用户点赞 startup 的关系表）
+CREATE TABLE IF NOT EXISTS likes (
+  id BIGSERIAL PRIMARY KEY,
+  author_id VARCHAR(255) NOT NULL REFERENCES authors(id) ON DELETE CASCADE,
+  startup_id VARCHAR(255) NOT NULL REFERENCES startups(id) ON DELETE CASCADE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE (author_id, startup_id)
+);
+
+-- 7. 创建索引提高性能
+CREATE INDEX IF NOT EXISTS idx_likes_author_id ON likes(author_id);
+CREATE INDEX IF NOT EXISTS idx_likes_startup_id ON likes(startup_id);
+
+-- 8. 自动维护 startups.likes_count 字段（可选增强）
+-- 如果你想让 startup 表直接显示点赞数，先添加字段：
+ALTER TABLE startups ADD COLUMN IF NOT EXISTS likes_count INTEGER DEFAULT 0;
+
+-- 当有新点赞时，自动 +1
+CREATE OR REPLACE FUNCTION update_likes_count_on_insert()
+RETURNS TRIGGER AS $$
+BEGIN
+  UPDATE startups SET likes_count = likes_count + 1 WHERE id = NEW.startup_id;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- 当取消点赞时，自动 -1
+CREATE OR REPLACE FUNCTION update_likes_count_on_delete()
+RETURNS TRIGGER AS $$
+BEGIN
+  UPDATE startups SET likes_count = likes_count - 1 WHERE id = OLD.startup_id;
+  RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+-- 注册触发器
+CREATE TRIGGER trg_likes_insert
+AFTER INSERT ON likes
+FOR EACH ROW
+EXECUTE FUNCTION update_likes_count_on_insert();
+
+CREATE TRIGGER trg_likes_delete
+AFTER DELETE ON likes
+FOR EACH ROW
+EXECUTE FUNCTION update_likes_count_on_delete();
+
+CREATE TABLE IF NOT EXISTS comments (
+  id BIGSERIAL PRIMARY KEY,
+  startup_id VARCHAR(255) NOT NULL REFERENCES startups(id) ON DELETE CASCADE,
+  author_id VARCHAR(255) NOT NULL REFERENCES authors(id) ON DELETE CASCADE,
+  content TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 10. 创建索引提高查询性能
+CREATE INDEX IF NOT EXISTS idx_comments_startup_id ON comments(startup_id);
+CREATE INDEX IF NOT EXISTS idx_comments_author_id ON comments(author_id);
+CREATE INDEX IF NOT EXISTS idx_comments_created_at ON comments(created_at);

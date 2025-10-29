@@ -1,14 +1,14 @@
 import { NextResponse } from 'next/server';
 import { getAuthorById } from '@/lib/db-operations';
 
-interface Author {
-  _id: string;
-  name: string;
-  username: string;
-  email: string;
-  image: string;
-  bio: string;
-}
+// interface Author {
+//   _id: string;
+//   name: string;
+//   username: string;
+//   email: string;
+//   image: string;
+//   bio: string;
+// }
 
 // Startup interface removed as it's not used in this file
 

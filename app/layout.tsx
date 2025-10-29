@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 import "./globals.css";
 import '@ant-design/v5-patch-for-react-19';
 import { ConfigProvider } from 'antd';
+import zhCN from 'antd/locale/zh_CN';
 import { AntdRegistry } from '@ant-design/nextjs-registry';
 import localFont from "next/font/local";
+import { SessionProvider } from "next-auth/react";
 import { Toaster } from "@/components/ui/sonner";
 
 const workSans = localFont({
@@ -72,13 +74,15 @@ export default function RootLayout({
             <body
                 className={workSans.variable}
             >
-                <ConfigProvider theme={{
+                <ConfigProvider locale={zhCN} theme={{
                     token: {
                         colorPrimary: '#EE2B69',
                     },
                 }}>
                     <AntdRegistry>
-                        {children}
+                        <SessionProvider refetchInterval={0} refetchOnWindowFocus={false}>
+                            {children}
+                        </SessionProvider>
                     </AntdRegistry>
                     <Toaster />
                 </ConfigProvider>

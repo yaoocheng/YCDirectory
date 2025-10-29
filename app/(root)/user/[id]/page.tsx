@@ -7,6 +7,15 @@ import { StartupFallback } from "@/components/StartupFallback";
 import { getAuthorById, getStartupsByAuthor } from "@/lib/db-operations";
 
 
+export const generateMetadata = async ({ params }: { params: Promise<{ id: string }> }) => {
+    const id = (await params).id;
+    const user = await getAuthorById(id);
+    return {
+        title: `${user?.name}`,
+        description: user?.bio || '',
+    }
+}
+
 const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
   const id = (await params).id;
   const session = await auth();
@@ -45,11 +54,11 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
 
           <div className="flex-1 flex flex-col gap-5 lg:-mt-5">
             <p className="text-30-bold">
-              {session?.user?.id === id ? "Your" : "All"} Startups
+              {session?.user?.id === id ? "您的创业项目" : "他的创业项目"} 
             </p>
             <ul className="card_grid-sm">
               <Suspense fallback={<StartupFallback />}>
-                <UserStartups startupUserData={startupUserData} />
+                <UserStartups id={id} startupUserData={startupUserData} />
               </Suspense>
             </ul>
           </div>

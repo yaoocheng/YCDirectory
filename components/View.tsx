@@ -10,7 +10,7 @@ const View = async ({ postsData }: { postsData: Startup }) => {
 
     after(() => {
         // 直接调用数据库函数更新浏览量
-        updateStartupViews(postsData._id, views + 1);
+        updateStartupViews(postsData._id);
     });
 
     return (
@@ -20,7 +20,7 @@ const View = async ({ postsData }: { postsData: Startup }) => {
             </div>
 
             <p className="view-text">
-                <span className="font-black">Views: {views + 1}</span>
+                <span className="font-black">Views: {views}</span>
             </p>
         </div>
     );

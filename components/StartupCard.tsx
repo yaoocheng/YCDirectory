@@ -2,11 +2,15 @@ import { formatDate } from "@/lib/utils";
 import { EyeIcon } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-// import { Skeleton } from "@/components/ui/skeleton";
+import { revalidatePath } from "next/cache";
 import { Startup } from "@/types/types";
+import { auth } from "@/auth";
+import { ThumbsUp } from "lucide-react"
+import { deleteStartupById } from "@/lib/db-operations";
 
-const StartupCard = ({ post }: { post: Startup }) => {
+const StartupCard = async ({ id, post }: { id?: string, post: Startup }) => {
     const {
         _createdAt,
         views,
@@ -15,18 +19,38 @@ const StartupCard = ({ post }: { post: Startup }) => {
         category,
         _id,
         image,
+        likes_count,
         description,
     } = post;
-    
+
+    const session = await auth();
+
+    const deleteStartup = async () => {
+        "use server";
+        try {
+            await deleteStartupById(_id);
+            revalidatePath(`/user/${id}`);
+        } catch (error) {
+            console.error("Error deleting startup:", error);
+        }
+    };
+
 
     return (
         <li className="startup-card group">
             <div className="flex-between">
                 <p className="startup_card_date">{formatDate(_createdAt.toString())}</p>
-                <div className="flex gap-1.5">
-                    <EyeIcon className="size-6 text-primary" />
-                    <span className="text-16-medium">{views}</span>
+                <div className="flex items-center gap-2">
+                    <div className="flex items-start gap-1">
+                        <ThumbsUp className="size-5 text-primary" />
+                        <span className="text-16-medium">{likes_count}</span>
+                    </div>
+                    <div className="flex items-start gap-1">
+                        <EyeIcon className="size-6 text-primary" />
+                        <span className="text-16-medium">{views}</span>
+                    </div>
                 </div>
+
             </div>
 
             <div className="flex-between mt-5 gap-5">
@@ -35,7 +59,7 @@ const StartupCard = ({ post }: { post: Startup }) => {
                         <p className="text-16-medium line-clamp-1">{author?.name}</p>
                     </Link>
                     <Link href={`/startup/${_id}`}>
-                        <h3 className="text-26-semibold line-clamp-1">{title}</h3>
+                        <h3 className="text-26-semibold line-clamp-1 break-all">{title}</h3>
                     </Link>
                 </div>
                 {author?.image && author?.name && (
@@ -55,12 +79,12 @@ const StartupCard = ({ post }: { post: Startup }) => {
                 <p className="startup-card_desc">{description}</p>
 
                 {image && (
-                    <Image 
-                        src={image} 
-                        alt={title || "Startup image"} 
-                        width={300} 
-                        height={200} 
-                        className="startup-card_img" 
+                    <Image
+                        src={image}
+                        alt={title || "Startup image"}
+                        width={300}
+                        height={200}
+                        className="startup-card_img"
                     />
                 )}
             </Link>
@@ -69,9 +93,15 @@ const StartupCard = ({ post }: { post: Startup }) => {
                 <Link href={`/?query=${category?.toLowerCase()}`}>
                     <p className="text-16-medium">{category}</p>
                 </Link>
-                <Button className="startup-card_btn" asChild>
-                    <Link href={`/startup/${_id}`}>Details</Link>
-                </Button>
+
+                <div className="flex gap-2 items-center">
+                    {id && session?.user?.id === id && (
+                        <Trash2 onClick={deleteStartup} className="size-6 cursor-pointer transition-transform hover:scale-110 text-black-200" />
+                    )}
+                    <Button className="startup-card_btn" asChild>
+                        <Link href={`/startup/${_id}`}>详情</Link>
+                    </Button>
+                </div>
             </div>
         </li>
     );

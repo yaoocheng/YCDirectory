@@ -10,17 +10,17 @@ interface Author {
   bio: string;
 }
 
-interface Startup {
-  _id: string;
-  title: string;
-  description: string;
-  category: string;
-  author: Author;
-  image: string;
-  pitch: string;
-  views: number;
-  _createdAt: string;
-}
+// interface Startup {
+//   _id: string;
+//   title: string;
+//   description: string;
+//   category: string;
+//   author: Author;
+//   image: string;
+//   pitch: string;
+//   views: number;
+//   _createdAt: string;
+// }
 
 export async function GET(
     request: Request,

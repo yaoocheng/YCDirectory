@@ -70,7 +70,7 @@
     }
 
     .heading {
-        @apply uppercase bg-black px-6 py-3 font-work-sans font-extrabold text-white text-[36px] leading-[46px] max-w-5xl text-center my-5 sm:text-[54px] sm:leading-[64px];
+        @apply uppercase rounded-xl bg-black px-6 py-3 font-work-sans font-extrabold text-white text-[36px] leading-[46px] max-w-5xl text-center my-5 sm:text-[54px] sm:leading-[64px];
     }
 
     .sub_heading {
@@ -160,6 +160,10 @@
     }
 
     .startup-form_input {
+        @apply border-[3px] border-black px-5 py-7 text-[18px] text-black font-semibold rounded-full mt-3 placeholder:text-black-300 !important;
+    }
+
+    .startup-form_select {
         @apply border-[3px] border-black px-5 py-7 text-[18px] text-black font-semibold rounded-full mt-3 placeholder:text-black-300 !important;
     }
 

@@ -7,17 +7,31 @@ import markdownit from 'markdown-it';
 import StartupCard from '@/components/StartupCard';
 import { Skeleton } from '@/components/ui/skeleton';
 import View from '@/components/View';
-import { getStartupById, getSimilarStartups } from '@/lib/db-operations';
+import { Startup } from '@/types';
+import { getStartupById, getSimilarStartups, getCommentsByStartupId } from '@/lib/db-operations';
+import LikeButton from '@/components/Like';
+import Share from '@/components/Share';
+import Comments from '@/components/Comments';
+
+
+export const generateMetadata = async ({ params }: { params: Promise<{ id: string }> }) => {
+    const { id } = (await params);
+    const postsData: Startup | null = await getStartupById(id);
+
+    return {
+        title: `${postsData?.title}`,
+        description: postsData?.description,
+    }
+}
 
 async function page({ params }: { params: { id: string } }) {
-
     const md = markdownit();
     const { id } = await params;
 
     try {
-        // 直接调用数据库函数获取startup详情
-        const postsData = await getStartupById(id);
-
+        const res = await Promise.all([getStartupById(id), getCommentsByStartupId(id)]);
+        const [postsData, comments] = res;
+        
         if (!postsData) {
             return notFound();
         }
@@ -53,7 +67,9 @@ async function page({ params }: { params: { id: string } }) {
                                     className="rounded-full drop-shadow-lg"
                                 />
                                 <div>
-                                    <p className="text-20-medium">{postsData.author?.name}</p>
+                                    <p className="text-20-medium">
+                                        {postsData.author?.name}
+                                    </p>
                                     <p className="text-16-medium !text-black-300">@{postsData.author?.username}</p>
                                 </div>
                             </Link>
@@ -61,19 +77,31 @@ async function page({ params }: { params: { id: string } }) {
                             <p className="category-tag">{postsData.category}</p>
                         </div>
 
-                        <h3 className="text-30-bold">Pitch Details</h3>
+                        <div className="flex justify-between items-center gap-4">
+                            <div className="flex items-center gap-4">
+                                <h3 className="text-30-bold">项目详情</h3>
+                                <div className="w-[90px]">
+                                    <LikeButton />
+                                </div>
+                            </div>
+                            <Share title={postsData.title} />
+                        </div>
                         {parsedContent ? (
                             <article
                                 className="prose max-w-4xl font-work-sans break-all"
                                 dangerouslySetInnerHTML={{ __html: parsedContent }}
                             />
                         ) : (
-                            <p className="no-result">No details provided</p>
+                            <p className="no-result">暂无项目详情</p>
                         )}
                     </div>
 
+                    {/* 评论 */}
+                    <Comments startupId={id} comments={comments} />
+
                     <hr className="divider" />
 
+                    {/* 相似的startup */}
                     {samePostsData?.length > 0 && (
                         <div className="max-w-4xl mx-auto">
                             <p className="text-30-semibold">Similar Startups</p>

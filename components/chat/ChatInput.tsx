@@ -21,9 +21,10 @@ const ChatInput: React.FC<{ isOutputting: boolean, handleAbort: () => void, hand
                     }}
                     onCompositionStart={() => setComposing(true)}
                     onCompositionEnd={() => setComposing(false)}
-                    placeholder="send a message..."
+                    placeholder="发送你的消息..."
                     style={{
                         borderRadius: '50px',
+                        paddingRight: '50px'
                     }}
                     className="h-12 px-4 flex-1"
                 />

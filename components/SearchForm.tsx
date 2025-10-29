@@ -7,7 +7,7 @@ function SearchForm({query}: {query: string}) {
   return (
     <>
         <Form action="/" scroll={false} className="search-form">
-            <input name="query" defaultValue={query}  placeholder="Search for startups" className="search-input" />
+            <input name="query" defaultValue={query}  placeholder="搜索创业项目" className="search-input" />
 
             <div className="flex gap-2">
                 {query && <SearchFormReset />}

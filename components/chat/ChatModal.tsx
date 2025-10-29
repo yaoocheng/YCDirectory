@@ -12,7 +12,7 @@ import ScrollToBottom from 'react-scroll-to-bottom';
 
 export default function ChatModal({ isModalOpen, setIsModalOpen }: { isModalOpen: boolean, setIsModalOpen: (isModalOpen: boolean) => void }) {
     const [messages, setMessages] = useState<Message[]>([
-        { type: 'bot', content: 'Hello, I am ChatBot, how can I help you?' },
+        { type: 'bot', content: '想问点什么呢？ 🤔' },
     ]);
     const [loading, setLoading] = useState(false);
     const [isOutputting, setIsOutputting] = useState(false);
@@ -44,7 +44,6 @@ export default function ChatModal({ isModalOpen, setIsModalOpen }: { isModalOpen
                 setLoading(false);
                 const token = event.data;
                 content += token;
-                console.log(token);
                 // if (Date.now() - lastUpdateTime > bufferTime) {
                 // lastUpdateTime = Date.now();
                 setMessages(prev => {
@@ -84,7 +83,7 @@ export default function ChatModal({ isModalOpen, setIsModalOpen }: { isModalOpen
     return (
         <Modal
             styles={{
-                content: { padding: 0, width: 480 }, // 保持你的内容高度
+                content: { padding: 0, width: 480, maxWidth: '95vw' }, // 保持你的内容高度
                 body: { padding: 0, height: 500 },
                 header: { backgroundColor: "#EE2B69", borderRadius: "8px 8px 0 0", padding: "16px", marginBottom: 0 },
             }}
