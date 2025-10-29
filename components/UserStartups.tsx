@@ -11,7 +11,7 @@ const UserStartups = async ({ id, startupUserData }: { id: string, startupUserDa
           <StartupCard id={id} key={startup._id} post={startup} />
         ))
       ) : (
-        <p className="no-result">No posts yet</p>
+        <p className="no-results  text-gray-400">暂无数据</p>
       )}
     </>
   );

@@ -439,29 +439,22 @@ export async function createOrUpdateAuthor(author: {
   bio: string;
 }): Promise<void> {
   try {
-    // 检查作者是否已存在
-    const existingAuthor = await getAuthorById(author.id);
-    
-    if (existingAuthor) {
-      // 更新现有作者
-      await sql`
-        UPDATE authors 
-        SET name = ${author.name}, username = ${author.username}, email = ${author.email}, 
-            image = ${author.image}, bio = ${author.bio}, updated_at = CURRENT_TIMESTAMP
-        WHERE id = ${author.id}
-      `;
-    } else {
-      // 创建新作者
-      await sql`
-        INSERT INTO authors (id, name, username, email, image, bio, created_at, updated_at)
-        VALUES (${author.id}, ${author.name}, ${author.username}, ${author.email}, ${author.image}, ${author.bio}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-      `;
-    }
+    await sql`
+      INSERT INTO authors (id, name, username, email, image, bio, created_at, updated_at)
+      VALUES (${author.id}, ${author.name}, ${author.username}, ${author.email}, ${author.image}, ${author.bio}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+      ON CONFLICT (username) DO UPDATE
+      SET name = EXCLUDED.name,
+          email = EXCLUDED.email,
+          image = EXCLUDED.image,
+          bio = EXCLUDED.bio,
+          updated_at = CURRENT_TIMESTAMP
+    `;
   } catch (error) {
     console.error('创建或更新作者失败:', error);
     throw new Error('Failed to create or update author');
   }
 }
+
 
 // 创建新的startup
 export async function createStartup(startup: {
