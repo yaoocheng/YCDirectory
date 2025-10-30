@@ -13,6 +13,7 @@ import {
     PopoverTrigger,
 } from '@/components/ui/popover';
 import Link from 'next/link';
+import { toast } from 'sonner';
 
 const { TextArea } = Input;
 
@@ -33,6 +34,7 @@ export default function Comments({ startupId, comments }: { startupId: string, c
     
     const handleSubmit = async () => {
         if (!session?.user?.id) {
+            toast.warning('请登录');
             return;
         }
 
@@ -80,7 +82,6 @@ export default function Comments({ startupId, comments }: { startupId: string, c
             <div className="flex flex-col gap-3 mb-4 items-end">
                 <TextArea
                     rows={3}
-                    disabled={!session?.user?.id}
                     autoSize={{ minRows: 2, maxRows: 4 }}
                     placeholder="哎呦，不错哦，评论一下吧"
                     value={inputValue}
