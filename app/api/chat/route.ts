@@ -12,7 +12,7 @@ export async function GET(request: Request) {
     const stream = new ReadableStream({
         async start(controller) {
             const model = new ChatAlibabaTongyi({
-                modelName: "qwen-max",
+                modelName: "qwen-plus",
                 temperature: 0.7,
                 alibabaApiKey: process.env.ALIBABA_API_KEY,
                 streaming: true,

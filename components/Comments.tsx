@@ -83,7 +83,8 @@ export default function Comments({ startupId, comments }: { startupId: string, c
                 <TextArea
                     rows={3}
                     autoSize={{ minRows: 2, maxRows: 4 }}
-                    placeholder="哎呦，不错哦，评论一下吧"
+                    placeholder={ session?.user?.id ? "哎呦，不错哦，评论一下吧" : "请登录后评论"}
+                    disabled={!session?.user?.id}
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                 />
@@ -94,7 +95,13 @@ export default function Comments({ startupId, comments }: { startupId: string, c
                             <SmilePlus className="w-5 h-5 transition hover:scale-110 text-gray-400 cursor-pointer" />
                         </PopoverTrigger>
                         <PopoverContent side='right' className="w-auto bg-white p-0">
-                            <Picker data={data} onEmojiSelect={(emoji: any) => setInputValue(inputValue + emoji.native)} />
+                            <Picker data={data} onEmojiSelect={(emoji: any) => 
+                            {
+                                if (session?.user?.id) {
+                                    setInputValue(inputValue + emoji.native);
+                                }
+                            }
+                        } />
                         </PopoverContent>
                     </Popover>
                     <Button
